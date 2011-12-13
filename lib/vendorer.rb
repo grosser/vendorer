@@ -27,7 +27,8 @@ class Vendorer
   end
 
   def update_or_not(path)
-    if @options[:update] or not File.exist?(path)
+    update_requested = (@options[:update] and (@options[:update] == true or @options[:update] == path))
+    if update_requested or not File.exist?(path)
       puts "updating #{path}"
       run "rm -rf #{path}"
       yield

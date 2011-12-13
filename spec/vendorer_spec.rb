@@ -18,6 +18,10 @@ describe Vendorer do
     File.read("spec/tmp/#{file}")
   end
 
+  def size(file)
+    File.size("spec/tmp/#{file}")
+  end
+
   def ls(path)
     `ls spec/tmp/#{path} 2>&1`.split("\n")
   end
@@ -75,6 +79,22 @@ describe Vendorer do
         run 'update'
         read('public/javascripts/jquery.min.js').should include('jQuery')
       end
+
+      it "can update a single file" do
+        write 'Vendorfile', "
+          file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
+          file 'public/javascripts/jquery.js' => 'http://code.jquery.com/jquery-latest.js'
+        "
+        run
+        read('public/javascripts/jquery.js').should include('jQuery')
+        read('public/javascripts/jquery.min.js').should include('jQuery')
+
+        write('public/javascripts/jquery.js', 'Foo')
+        write('public/javascripts/jquery.min.js', 'Foo')
+        run 'update public/javascripts/jquery.js'
+        size('public/javascripts/jquery.min.js').should == 3
+        size('public/javascripts/jquery.js').should > 300
+      end
     end
 
     it "fails with a nice message" do
@@ -123,6 +143,19 @@ describe Vendorer do
         write('its_recursive/Gemfile', 'Foo')
         run 'update'
         read('its_recursive/Gemfile').should include('rake')
+      end
+
+      it "can update a single file" do
+        write 'Vendorfile', "
+          folder 'its_recursive' => '../../.git'
+          folder 'its_really_recursive' => '../../.git'
+        "
+        run
+        write('its_recursive/Gemfile', 'Foo')
+        write('its_really_recursive/Gemfile', 'Foo')
+        run 'update its_recursive'
+        size('its_really_recursive/Gemfile').should == 3
+        size('its_recursive/Gemfile').should > 30
       end
     end
   end

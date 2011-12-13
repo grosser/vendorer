@@ -30,6 +30,7 @@ TODO
 ====
  - git branch/commit support
  - `folder 'vendor' do` which will remove everything that is not vendored via Vendorfile on `vendorer update` or `vendorer update vendor`
+ - nice error message when no Vendorfile was found 
 
 Author
 ======

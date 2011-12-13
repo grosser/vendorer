@@ -19,7 +19,7 @@ describe Vendorer do
   end
 
   def ls(path)
-    `ls spec/tmp/#{path}`.split("\n")
+    `ls spec/tmp/#{path} 2>&1`.split("\n")
   end
 
   def run(args='')
@@ -49,10 +49,25 @@ describe Vendorer do
   end
 
   describe '.file' do
-    it "can download via hash syntax" do
+    before do
       write 'Vendorfile', "file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'"
       run
+    end
+
+    it "can download via hash syntax" do
       ls('public/javascripts').should == ["jquery.min.js"]
+      read('public/javascripts/jquery.min.js').should include('jQuery')
+    end
+
+    it "does not update an existing file" do
+      write('public/javascripts/jquery.min.js', 'Foo')
+      run
+      read('public/javascripts/jquery.min.js').should == 'Foo'
+    end
+
+    it "can update a file" do
+      write('public/javascripts/jquery.min.js', 'Foo')
+      run 'update'
       read('public/javascripts/jquery.min.js').should include('jQuery')
     end
   end
@@ -65,11 +80,32 @@ describe Vendorer do
       read('vendor/plugins/parallel_tests/Gemfile').should include('parallel')
     end
 
-    it "can download local repos" do
-      write 'Vendorfile', "folder 'its_recursive' => '../../.git'"
-      run
-      ls('').should == ["its_recursive", "Vendorfile"]
-      read('its_recursive/Gemfile').should include('rake')
+    context "with a fast,local repository" do
+      before do
+        write 'Vendorfile', "folder 'its_recursive' => '../../.git'"
+        run
+      end
+
+      it "can download" do
+        ls('').should == ["its_recursive", "Vendorfile"]
+        read('its_recursive/Gemfile').should include('rake')
+      end
+
+      it "does not keep .git folder so everything can be checked in" do
+        ls('its_recursive/.git').first.should include('cannot access')
+      end
+
+      it "does not update an existing folder" do
+        write('its_recursive/Gemfile', 'Foo')
+        run
+        read('its_recursive/Gemfile').should == 'Foo'
+      end
+
+      it "can update a folder" do
+        write('its_recursive/Gemfile', 'Foo')
+        run 'update'
+        read('its_recursive/Gemfile').should include('rake')
+      end
     end
   end
 end

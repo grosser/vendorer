@@ -30,4 +30,4 @@ end
 parser.parse!
 
 require 'vendorer'
-Vendorer.vendor
+Vendorer.new(:update => (ARGV[0] == 'update'))

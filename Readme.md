@@ -1,7 +1,6 @@
 Vendorer keeps your vendor files up to date.
 
- - simple
- - updateable
+ - updateable AND documented dependencies
  - copy-paste-free
  - no unwanted/accidental updates
 
@@ -18,7 +17,7 @@ Add a Vendorfile to your project root:
     file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
     folder 'vendor/plugins/parallel_tests' => 'https://github.com/grosser/parallel_tests.git'
 
-Call `vendorer`.
+Call `vendorer`
 
 If you added something new: `vendorer`
 

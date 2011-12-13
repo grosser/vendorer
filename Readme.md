@@ -26,6 +26,11 @@ If you want to update all dependencies: `vendorer update`
 If you want to update one dependencies: `vendorer update public/javasctips/jquery.min.js`
 
 
+TODO
+====
+ - git branch/commit support
+ - `folder 'vendor' do` which will remove everything that is not vendored via Vendorfile on `vendorer update` or `vendorer update vendor`
+
 Author
 ======
 [Michael Grosser](http://grosser.it)<br/>

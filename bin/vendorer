@@ -6,14 +6,26 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 options = {}
 parser = OptionParser.new do |opts|
   opts.banner = <<BANNER
-TODO
+Vendorer keeps your vendor files up to date.
+
+Usage:
+
+Create a Vendorfile in your project root with:
+
+    file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
+    folder 'vendor/plugins/parallel_tests' => 'https://github.com/grosser/parallel_tests.git'
+
+Run `vendorer` to install.
+Run `vendorer update` to update.
+
+Options:
 BANNER
-  opts.on("-v", "--version","Show Version"){
+  opts.on("-v", "--version", "Show Version"){
     require 'vendorer/version'
     puts Vendorer::VERSION
     exit
   }
-  opts.on("-h", "--help","Show this.") { puts opts; exit }
+  opts.on("-h", "--help", "Show this.") { puts opts; exit }
 end
 parser.parse!
 

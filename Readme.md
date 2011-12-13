@@ -1,4 +1,4 @@
-Keep your vendor files up to date.
+Vendorer keeps your vendor files up to date.
 
  - simple
  - updateable

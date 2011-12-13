@@ -100,7 +100,8 @@ describe Vendorer do
     it "fails with a nice message" do
       write 'Vendorfile', "file 'xxx.js' => 'http://NOTFOUND'"
       result = run '', :raise => true
-      result.should include('Downloaded empty file')
+      # different errors on travis / local
+      raise result unless result.include?("resolve host 'NOTFOUND'") or result.include?('Downloaded empty file')
     end
   end
 
@@ -115,7 +116,8 @@ describe Vendorer do
     it "reports errors" do
       write 'Vendorfile', "folder 'vendor/plugins/parallel_tests' => 'https://blob'"
       output = run '', :raise => true
-      output.should include('Connection refused')
+      # different errors on travis / local
+      raise unless output.include?('Connection refused') or output.include?('resolve host')
     end
 
     context "with a fast,local repository" do

@@ -22,53 +22,65 @@ describe Vendorer do
     `ls spec/tmp/#{path} 2>&1`.split("\n")
   end
 
-  def run(args='')
+  def run(args='', options={})
     out = `cd spec/tmp && bundle exec ../../bin/vendorer #{args} 2>&1`
-    raise out unless $?.success?
+    raise out if $?.success? == !!options[:raise]
     out
   end
 
-  it "has a VERSION" do
-    Vendorer::VERSION.should =~ /^[\.\da-z]+$/
+  describe 'version' do
+    it "has a VERSION" do
+      Vendorer::VERSION.should =~ /^[\.\da-z]+$/
+    end
+
+    it "shows its version via -v" do
+      run('-v').should == "#{Vendorer::VERSION}\n"
+    end
+
+    it "shows its version via --version" do
+      run('--version').should == "#{Vendorer::VERSION}\n"
+    end
   end
 
-  it "shows its version via -v" do
-    run('-v').should == "#{Vendorer::VERSION}\n"
-  end
+  describe 'help' do
+    it "shows help via -h" do
+      run('-h').should include("Usage")
+    end
 
-  it "shows its version via --version" do
-    run('--version').should == "#{Vendorer::VERSION}\n"
-  end
-
-  it "shows help via -h" do
-    run('-h').should include("Usage")
-  end
-
-  it "shows help via --help" do
-    run('--help').should include("Usage")
+    it "shows help via --help" do
+      run('--help').should include("Usage")
+    end
   end
 
   describe '.file' do
-    before do
-      write 'Vendorfile', "file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'"
-      run
+    context "with working Vendorfile" do
+      before do
+        write 'Vendorfile', "file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'"
+        run
+      end
+
+      it "can download via hash syntax" do
+        ls('public/javascripts').should == ["jquery.min.js"]
+        read('public/javascripts/jquery.min.js').should include('jQuery')
+      end
+
+      it "does not update an existing file" do
+        write('public/javascripts/jquery.min.js', 'Foo')
+        run
+        read('public/javascripts/jquery.min.js').should == 'Foo'
+      end
+
+      it "can update a file" do
+        write('public/javascripts/jquery.min.js', 'Foo')
+        run 'update'
+        read('public/javascripts/jquery.min.js').should include('jQuery')
+      end
     end
 
-    it "can download via hash syntax" do
-      ls('public/javascripts').should == ["jquery.min.js"]
-      read('public/javascripts/jquery.min.js').should include('jQuery')
-    end
-
-    it "does not update an existing file" do
-      write('public/javascripts/jquery.min.js', 'Foo')
-      run
-      read('public/javascripts/jquery.min.js').should == 'Foo'
-    end
-
-    it "can update a file" do
-      write('public/javascripts/jquery.min.js', 'Foo')
-      run 'update'
-      read('public/javascripts/jquery.min.js').should include('jQuery')
+    it "fails with a nice message" do
+      write 'Vendorfile', "file 'xxx.js' => 'http://NOTFOUND'"
+      result = run '', :raise => true
+      result.should include('Downloaded empty file')
     end
   end
 
@@ -78,6 +90,12 @@ describe Vendorer do
       run
       ls('vendor/plugins').should == ["parallel_tests"]
       read('vendor/plugins/parallel_tests/Gemfile').should include('parallel')
+    end
+
+    it "reports errors" do
+      write 'Vendorfile', "folder 'vendor/plugins/parallel_tests' => 'https://blob'"
+      output = run '', :raise => true
+      output.should include('Connection refused')
     end
 
     context "with a fast,local repository" do

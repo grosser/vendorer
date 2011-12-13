@@ -1,21 +1,33 @@
-Keep your vendor files up to date
+Keep your vendor files up to date.
+
+ - simple
+ - updateable
+ - copy-paste-free
+ - no unwanted/accidental updates
 
 Install
 =======
     sudo gem install vendorer
-Or
-
-    rails plugin install git://github.com/grosser/vendorer.git
-
 
 Usage
 =====
-    CODE EXAMPLE
+Add a Vendorfile to your project root:
+
+    file 'public/javasctips/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
+    folder 'vendor/plugins/parallel_tests' => 'https://github.com/grosser/parallel_tests.git'
+
+Call `vendorer`.
+
+If you added something new: `vendorer`
+
+If you want to update all dependencies: `vendorer update`
+
+If you want to update one dependencies: `vendorer update public/javasctips/jquery.min.js`
+
 
 Author
 ======
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>
 License: MIT<br/>
-[![Flattr](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=grosser&url=https://github.com/grosser/vendorer&title=vendorer&language=en_US&tags=github&category=software)
 [![Build Status](https://secure.travis-ci.org/grosser/vendorer.png)](http://travis-ci.org/grosser/vendorer)

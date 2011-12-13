@@ -30,7 +30,9 @@ TODO
 ====
  - git branch/commit support
  - `folder 'vendor' do` which will remove everything that is not vendored via Vendorfile on `vendorer update` or `vendorer update vendor`
- - nice error message when no Vendorfile was found 
+ - nice error message when no Vendorfile was found
+ - block support `folder(....){|folder| `rm -rf "#{folder}/.gitignore"` }`
+ - syntax change to `file a, b` + `folder a, b`  
 
 Author
 ======

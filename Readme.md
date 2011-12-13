@@ -7,13 +7,15 @@ Keep your vendor files up to date.
 
 Install
 =======
+Install curl and git, then:
+
     sudo gem install vendorer
 
 Usage
 =====
 Add a Vendorfile to your project root:
 
-    file 'public/javasctips/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
+    file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
     folder 'vendor/plugins/parallel_tests' => 'https://github.com/grosser/parallel_tests.git'
 
 Call `vendorer`.

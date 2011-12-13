@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# encoding: UTF-8
+require 'optparse'
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = <<BANNER
+TODO
+BANNER
+  opts.on("-v", "--version","Show Version"){
+    require 'vendorer/version'
+    puts Vendorer::VERSION
+    exit
+  }
+  opts.on("-h", "--help","Show this.") { puts opts; exit }
+end
+parser.parse!
+
+require 'vendorer'
+Vendorer.vendor

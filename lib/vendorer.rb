@@ -6,23 +6,19 @@ class Vendorer
 
   private
 
-  def file(options)
-    options.each do |file, url|
-      update_or_not file do
-        run "mkdir -p #{File.dirname(file)}"
-        run "curl '#{url}' -o #{file}"
-        raise "Downloaded empty file" unless File.exist?(file)
-      end
+  def file(path, url)
+    update_or_not path do
+      run "mkdir -p #{File.dirname(path)}"
+      run "curl '#{url}' -o #{path}"
+      raise "Downloaded empty file" unless File.exist?(path)
     end
   end
 
-  def folder(options)
-    options.each do |path, url|
-      update_or_not path do
-        run "mkdir -p #{File.dirname(path)}"
-        run "git clone '#{url}' #{path}"
-        run "rm -rf #{path}/.git"
-      end
+  def folder(path, url)
+    update_or_not path do
+      run "mkdir -p #{File.dirname(path)}"
+      run "git clone '#{url}' #{path}"
+      run "rm -rf #{path}/.git"
     end
   end
 

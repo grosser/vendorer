@@ -1,7 +1,7 @@
-Vendorer keeps your vendor files up to date.
+Vendorer
 
- - updateable AND documented dependencies
- - copy-paste-free
+ - documented dependencies
+ - automatic updates
  - no unwanted/accidental updates
 
 Install
@@ -12,10 +12,10 @@ Install curl and git, then:
 
 Usage
 =====
-Add a Vendorfile to your project root:
+Add a `Vendorfile` to your project root:
 
-    file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
-    folder 'vendor/plugins/parallel_tests' => 'https://github.com/grosser/parallel_tests.git'
+    file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'
+    folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'
 
 Call `vendorer`
 
@@ -32,7 +32,6 @@ TODO
  - `folder 'vendor' do` which will remove everything that is not vendored via Vendorfile on `vendorer update` or `vendorer update vendor`
  - nice error message when no Vendorfile was found
  - block support `folder(....){|folder| `rm -rf "#{folder}/.gitignore"` }`
- - syntax change to `file a, b` + `folder a, b`  
 
 Author
 ======

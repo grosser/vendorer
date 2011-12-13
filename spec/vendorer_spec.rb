@@ -59,7 +59,7 @@ describe Vendorer do
   describe '.file' do
     context "with working Vendorfile" do
       before do
-        write 'Vendorfile', "file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'"
+        write 'Vendorfile', "file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'"
         run
       end
 
@@ -82,8 +82,8 @@ describe Vendorer do
 
       it "can update a single file" do
         write 'Vendorfile', "
-          file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
-          file 'public/javascripts/jquery.js' => 'http://code.jquery.com/jquery-latest.js'
+          file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'
+          file 'public/javascripts/jquery.js', 'http://code.jquery.com/jquery-latest.js'
         "
         run
         read('public/javascripts/jquery.js').should include('jQuery')
@@ -98,7 +98,7 @@ describe Vendorer do
     end
 
     it "fails with a nice message" do
-      write 'Vendorfile', "file 'xxx.js' => 'http://NOTFOUND'"
+      write 'Vendorfile', "file 'xxx.js', 'http://NOTFOUND'"
       result = run '', :raise => true
       # different errors on travis / local
       raise result unless result.include?("resolve host 'NOTFOUND'") or result.include?('Downloaded empty file')
@@ -107,14 +107,14 @@ describe Vendorer do
 
   describe '.folder' do
     it "can download via hash syntax" do
-      write 'Vendorfile', "folder 'vendor/plugins/parallel_tests' => 'https://github.com/grosser/parallel_tests.git'"
+      write 'Vendorfile', "folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'"
       run
       ls('vendor/plugins').should == ["parallel_tests"]
       read('vendor/plugins/parallel_tests/Gemfile').should include('parallel')
     end
 
     it "reports errors" do
-      write 'Vendorfile', "folder 'vendor/plugins/parallel_tests' => 'https://blob'"
+      write 'Vendorfile', "folder 'vendor/plugins/parallel_tests', 'https://blob'"
       output = run '', :raise => true
       # different errors on travis / local
       raise unless output.include?('Connection refused') or output.include?('resolve host')
@@ -122,7 +122,7 @@ describe Vendorer do
 
     context "with a fast,local repository" do
       before do
-        write 'Vendorfile', "folder 'its_recursive' => '../../.git'"
+        write 'Vendorfile', "folder 'its_recursive', '../../.git'"
         run
       end
 
@@ -149,8 +149,8 @@ describe Vendorer do
 
       it "can update a single file" do
         write 'Vendorfile', "
-          folder 'its_recursive' => '../../.git'
-          folder 'its_really_recursive' => '../../.git'
+          folder 'its_recursive', '../../.git'
+          folder 'its_really_recursive', '../../.git'
         "
         run
         write('its_recursive/Gemfile', 'Foo')

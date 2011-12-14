@@ -177,6 +177,26 @@ describe Vendorer do
       end
     end
 
+    describe "git options" do
+      it "can checkout by :ref" do
+        write 'Vendorfile', "folder 'its_recursive', '../../.git', :ref => 'b1e6460'"
+        run
+        read('its_recursive/Readme.md').should include('CODE EXAMPLE')
+      end
+
+      it "can checkout by :branch" do
+        write 'Vendorfile', "folder 'its_recursive', '../../.git', :branch => 'b1e6460'"
+        run
+        read('its_recursive/Readme.md').should include('CODE EXAMPLE')
+      end
+
+      it "can checkout by :tag" do
+        write 'Vendorfile', "folder 'its_recursive', '../../.git', :tag => 'b1e6460'"
+        run
+        read('its_recursive/Readme.md').should include('CODE EXAMPLE')
+      end
+    end
+
     context "with a passed block" do
       before do
         write 'Vendorfile', "folder('its_recursive', '../../.git'){|path| puts 'THE PATH IS ' + path }"

@@ -22,6 +22,9 @@ Add a `Vendorfile` to your project root:
       puts "Do something useful with #{path}"
     end
 
+    # checkout a specific :ref/:tag/:branch
+    folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git', :tag => 'v0.6.10'
+
 Call `vendorer`
 
 If you added something new: `vendorer`
@@ -33,7 +36,6 @@ If you want to update one dependencies: `vendorer update public/javasctips/jquer
 
 TODO
 ====
- - git branch/commit support
  - `folder 'vendor' do` which will remove everything that is not vendored via Vendorfile on `vendorer update` or `vendorer update vendor`
  - nice error message when no Vendorfile was found
 

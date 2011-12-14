@@ -15,10 +15,13 @@ class Vendorer
     end
   end
 
-  def folder(path, url)
+  def folder(path, url, options={})
     update_or_not path do
       run "mkdir -p #{File.dirname(path)}"
       run "git clone '#{url}' #{path}"
+      if commit = (options[:ref] || options[:tag] || options[:branch])
+        run "cd #{path} && git checkout '#{commit}'"
+      end
       run "rm -rf #{path}/.git"
       yield path if block_given?
     end

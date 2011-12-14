@@ -97,7 +97,7 @@ describe Vendorer do
       end
     end
 
-    it "fails with a nice message" do
+    it "fails with a nice message if the Vendorfile is broken" do
       write 'Vendorfile', "file 'xxx.js', 'http://NOTFOUND'"
       result = run '', :raise => true
       # different errors on travis / local
@@ -113,7 +113,7 @@ describe Vendorer do
       read('vendor/plugins/parallel_tests/Gemfile').should include('parallel')
     end
 
-    it "reports errors" do
+    it "reports errors when the Vendorfile is broken" do
       write 'Vendorfile', "folder 'vendor/plugins/parallel_tests', 'https://blob'"
       output = run '', :raise => true
       # different errors on travis / local

@@ -103,6 +103,22 @@ describe Vendorer do
       # different errors on travis / local
       raise result unless result.include?("resolve host 'NOTFOUND'") or result.include?('Downloaded empty file')
     end
+
+    context "with a passed block" do
+      before do
+        write 'Vendorfile', "file('public/javascripts/jquery.js', 'http://code.jquery.com/jquery-latest.js'){|path| puts 'THE PATH IS ' + path }"
+        @output = "THE PATH IS public/javascripts/jquery.js"
+      end
+
+      it "runs the block after update" do
+        run.should include(@output)
+      end
+
+      it "does not run the block when not updating" do
+        run
+        run.should_not include(@output)
+      end
+    end
   end
 
   describe '.folder' do
@@ -158,6 +174,22 @@ describe Vendorer do
         run 'update its_recursive'
         size('its_really_recursive/Gemfile').should == 3
         size('its_recursive/Gemfile').should > 30
+      end
+    end
+
+    context "with a passed block" do
+      before do
+        write 'Vendorfile', "folder('its_recursive', '../../.git'){|path| puts 'THE PATH IS ' + path }"
+        @output = 'THE PATH IS its_recursive'
+      end
+
+      it "runs the block after update" do
+        run.should include(@output)
+      end
+
+      it "does not run the block when not updating" do
+        run
+        run.should_not include(@output)
       end
     end
   end

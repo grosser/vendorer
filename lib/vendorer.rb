@@ -11,6 +11,7 @@ class Vendorer
       run "mkdir -p #{File.dirname(path)}"
       run "curl '#{url}' -o #{path}"
       raise "Downloaded empty file" unless File.exist?(path)
+      yield path if block_given?
     end
   end
 
@@ -19,6 +20,7 @@ class Vendorer
       run "mkdir -p #{File.dirname(path)}"
       run "git clone '#{url}' #{path}"
       run "rm -rf #{path}/.git"
+      yield path if block_given?
     end
   end
 

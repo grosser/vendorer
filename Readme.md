@@ -17,6 +17,11 @@ Add a `Vendorfile` to your project root:
     file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'
     folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'
 
+    # execute a block after updates
+    file 'public/javascripts/jquery.js', 'http://code.jquery.com/jquery.js' do |path|
+      puts "Do something useful with #{path}"
+    end
+
 Call `vendorer`
 
 If you added something new: `vendorer`
@@ -31,7 +36,6 @@ TODO
  - git branch/commit support
  - `folder 'vendor' do` which will remove everything that is not vendored via Vendorfile on `vendorer update` or `vendorer update vendor`
  - nice error message when no Vendorfile was found
- - block support `folder(....){|folder| `rm -rf "#{folder}/.gitignore"` }`
 
 Author
 ======

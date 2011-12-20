@@ -296,4 +296,18 @@ describe Vendorer do
       end
     end
   end
+
+  describe 'rewrite' do
+    it "can rewrite a file to change stuff" do
+      write "Vendorfile", "
+      file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js' do |path|
+        rewrite(path){|content| content.gsub('j','h') }
+      end
+      "
+      vendorer
+      content = read('public/javascripts/jquery.min.js')[0..100]
+      content.should_not include('jQuery')
+      content.should include('hQuery')
+    end
+  end
 end

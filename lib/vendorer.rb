@@ -7,8 +7,6 @@ class Vendorer
     eval(File.read('Vendorfile'))
   end
 
-  private
-
   def file(path, url)
     path = complete_path(path)
     update_or_not path do
@@ -38,6 +36,14 @@ class Vendorer
       @sub_path.pop
     end
   end
+
+  def rewrite(path)
+    content = File.read(path)
+    result = yield content
+    File.open(path,'w'){|f| f.write(result) }
+  end
+
+  private
 
   def update_or_not(path)
     update_requested = (@options[:update] and (@options[:update] == true or path.start_with?(@options[:update]+'/') or path == @options[:update]))

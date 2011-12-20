@@ -20,6 +20,7 @@ Add a `Vendorfile` to your project root:
     # execute a block after updates
     file 'public/javascripts/jquery.js', 'http://code.jquery.com/jquery.js' do |path|
       puts "Do something useful with #{path}"
+      rewrite(path){|content| content.gsub(/\r\n/,\n).gsub(/\t/,'  ') }
     end
 
     # checkout a specific :ref/:tag/:branch

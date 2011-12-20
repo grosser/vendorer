@@ -98,20 +98,31 @@ describe Vendorer do
         read('public/javascripts/jquery.min.js').should include('jQuery')
       end
 
-      it "updates a single file when update is called with the file" do
-        write 'Vendorfile', "
-          file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'
+      context "with multiple files" do
+        before do
+          write 'Vendorfile', "
           file 'public/javascripts/jquery.js', 'http://code.jquery.com/jquery-latest.js'
-        "
-        vendorer
-        read('public/javascripts/jquery.js').should include('jQuery')
-        read('public/javascripts/jquery.min.js').should include('jQuery')
+          file 'public/javascripts/jquery.js.min', 'http://code.jquery.com/jquery-latest.min.js'
+          "
+          vendorer
+          read('public/javascripts/jquery.js').should include('jQuery')
+          read('public/javascripts/jquery.js.min').should include('jQuery')
 
-        write('public/javascripts/jquery.js', 'Foo')
-        write('public/javascripts/jquery.min.js', 'Foo')
-        vendorer 'update public/javascripts/jquery.js'
-        size('public/javascripts/jquery.min.js').should == 3
-        size('public/javascripts/jquery.js').should > 300
+          write('public/javascripts/jquery.js', 'Foo')
+          write('public/javascripts/jquery.js.min', 'Foo')
+        end
+
+        it "updates a single file when update is called with the file" do
+          vendorer 'update public/javascripts/jquery.js.min'
+          size('public/javascripts/jquery.js.min').should > 300
+          size('public/javascripts/jquery.js').should == 3
+        end
+
+        it "does not update a file that starts with the same path" do
+          vendorer 'update public/javascripts/jquery.js'
+          size('public/javascripts/jquery.js').should > 300
+          size('public/javascripts/jquery.js.min').should == 3
+        end
       end
 
       it "does not change file modes" do
@@ -233,6 +244,55 @@ describe Vendorer do
       it "does not run the block when not updating" do
         vendorer
         vendorer.should_not include(@output)
+      end
+    end
+
+    context "with folder scoping" do
+      before do
+        write 'Vendorfile', "
+        folder 'public/javascripts' do
+          file 'jquery.js', 'http://code.jquery.com/jquery-latest.min.js'
+        end
+      "
+      end
+
+      it "can download a nested file" do
+        vendorer
+        read('public/javascripts/jquery.js').should include('jQuery')
+      end
+
+      it "can update a nested file" do
+        vendorer
+        write('public/javascripts/jquery.js','Foo')
+        vendorer 'update'
+        read('public/javascripts/jquery.js').should include('jQuery')
+      end
+
+      it "can update a whole folder" do
+        write 'Vendorfile', "
+        folder 'public/javascripts' do
+          file 'jquery.js', 'http://code.jquery.com/jquery-latest.min.js'
+        end
+        file 'xxx.js', 'http://code.jquery.com/jquery-latest.min.js'
+        "
+        vendorer
+        write('public/javascripts/jquery.js','Foo')
+        write('xxx.js','Foo')
+        vendorer 'update public/javascripts'
+        read('xxx.js').should == "Foo"
+        read('public/javascripts/jquery.js').should include('jQuery')
+      end
+
+      it "can be nested multiple times" do
+        write 'Vendorfile', "
+        folder 'public' do
+          folder 'javascripts' do
+            file 'jquery.js', 'http://code.jquery.com/jquery-latest.min.js'
+          end
+        end
+        "
+        vendorer
+        read('public/javascripts/jquery.js').should include('jQuery')
       end
     end
   end

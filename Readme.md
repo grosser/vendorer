@@ -25,18 +25,24 @@ Add a `Vendorfile` to your project root:
     # checkout a specific :ref/:tag/:branch
     folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git', :tag => 'v0.6.10'
 
+    # DRY folders
+    folder 'public/javascripts' do
+      file 'jquery.js', 'http://code.jquery.com/jquery-latest.js'
+    end
+
 Call `vendorer`
 
 If you added something new: `vendorer`
 
-If you want to update all dependencies: `vendorer update`
+Update all dependencies: `vendorer update`
 
-If you want to update one dependencies: `vendorer update public/javasctips/jquery.min.js`
+Update one dependencies: `vendorer update public/javascripts/jquery.min.js`
+
+Update everything in a folder: `vendorer update public/javascripts`
 
 
 TODO
 ====
- - `folder 'vendor' do` which will remove everything that is not vendored via Vendorfile on `vendorer update` or `vendorer update vendor`
  - nice error message when no Vendorfile was found
 
 Author

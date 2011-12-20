@@ -22,6 +22,12 @@ describe Vendorer do
     File.size("spec/tmp/#{file}")
   end
 
+  def run(cmd)
+    result = `cd spec/tmp && #{cmd} 2>&1`
+    raise result unless $?.success?
+    result
+  end
+
   def ls(path)
     `ls spec/tmp/#{path} 2>&1`.split("\n")
   end
@@ -110,7 +116,11 @@ describe Vendorer do
 
       it "does not change file modes" do
         simple_vendorfile
-        vendorer 'update'
+        vendorer
+        run 'chmod 711 public/javascripts/jquery.min.js'
+        lambda{
+          vendorer 'update'
+        }.should_not change{ run('ls -l public/javascripts').split("\n") }
       end
     end
 

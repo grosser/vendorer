@@ -1,3 +1,5 @@
+require 'tempfile'
+
 class Vendorer
   def initialize(options)
     @options = options
@@ -17,6 +19,7 @@ class Vendorer
 
   def folder(path, url, options={})
     update_or_not path do
+      run "rm -rf #{path}"
       run "mkdir -p #{File.dirname(path)}"
       run "git clone '#{url}' #{path}"
       if commit = (options[:ref] || options[:tag] || options[:branch])
@@ -31,7 +34,6 @@ class Vendorer
     update_requested = (@options[:update] and (@options[:update] == true or @options[:update] == path))
     if update_requested or not File.exist?(path)
       puts "updating #{path}"
-      run "rm -rf #{path}"
       yield
     else
       puts "keeping #{path}"

@@ -142,7 +142,11 @@ describe Vendorer do
   end
 
   describe '.folder' do
-    it "can download via hash syntax" do
+    before do
+      write 'Vendorfile', "folder 'its_recursive', '../../.git'"
+    end
+
+    it "can download from remote" do
       write 'Vendorfile', "folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'"
       vendorer
       ls('vendor/plugins').should == ["parallel_tests"]
@@ -156,34 +160,33 @@ describe Vendorer do
       raise unless output.include?('Connection refused') or output.include?('resolve host')
     end
 
-    context "with a fast,local repository" do
-      before do
-        write 'Vendorfile', "folder 'its_recursive', '../../.git'"
+    it "can download from local" do
+      vendorer
+      ls('').should == ["its_recursive", "Vendorfile"]
+      read('its_recursive/Gemfile').should include('rake')
+    end
+
+    it "does not keep .git folder so everything can be checked in" do
+      vendorer
+      ls('its_recursive/.git').first.should include('cannot access')
+    end
+
+    it "does not update an existing folder" do
+      vendorer
+      write('its_recursive/Gemfile', 'Foo')
+      vendorer
+      read('its_recursive/Gemfile').should == 'Foo'
+    end
+
+    describe 'update' do
+      it "updates a folder" do
         vendorer
-      end
-
-      it "can download" do
-        ls('').should == ["its_recursive", "Vendorfile"]
-        read('its_recursive/Gemfile').should include('rake')
-      end
-
-      it "does not keep .git folder so everything can be checked in" do
-        ls('its_recursive/.git').first.should include('cannot access')
-      end
-
-      it "does not update an existing folder" do
-        write('its_recursive/Gemfile', 'Foo')
-        vendorer
-        read('its_recursive/Gemfile').should == 'Foo'
-      end
-
-      it "can update a folder" do
         write('its_recursive/Gemfile', 'Foo')
         vendorer 'update'
         read('its_recursive/Gemfile').should include('rake')
       end
 
-      it "can update a single file" do
+      it "can update a specific folder" do
         write 'Vendorfile', "
           folder 'its_recursive', '../../.git'
           folder 'its_really_recursive', '../../.git'
@@ -217,7 +220,7 @@ describe Vendorer do
       end
     end
 
-    context "with a passed block" do
+    context "with an execute after update block" do
       before do
         write 'Vendorfile', "folder('its_recursive', '../../.git'){|path| puts 'THE PATH IS ' + path }"
         @output = 'THE PATH IS its_recursive'

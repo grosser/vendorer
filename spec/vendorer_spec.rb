@@ -297,7 +297,7 @@ describe Vendorer do
     end
   end
 
-  describe 'rewrite' do
+  describe '#rewrite' do
     it "can rewrite a file to change stuff" do
       write "Vendorfile", "
       file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js' do |path|
@@ -308,6 +308,15 @@ describe Vendorer do
       content = read('public/javascripts/jquery.min.js')[0..100]
       content.should_not include('jQuery')
       content.should include('hQuery')
+    end
+  end
+
+  describe "#parse" do
+    it "executes inside vendorer" do
+      $test = 1
+      v = Vendorer.new
+      v.parse '$test = self'
+      $test.should == v
     end
   end
 end

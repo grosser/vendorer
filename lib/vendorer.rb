@@ -1,10 +1,13 @@
 require 'tempfile'
 
 class Vendorer
-  def initialize(options)
+  def initialize(options={})
     @options = options
     @sub_path = []
-    eval(File.read('Vendorfile'))
+  end
+
+  def parse(content)
+    eval(content)
   end
 
   def file(path, url)

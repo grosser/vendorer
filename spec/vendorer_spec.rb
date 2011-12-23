@@ -38,11 +38,11 @@ describe Vendorer do
     out
   end
 
-  describe 'version' do
-    it "has a VERSION" do
-      Vendorer::VERSION.should =~ /^[\.\da-z]+$/
-    end
+  it "has a VERSION" do
+    Vendorer::VERSION.should =~ /^[\.\da-z]+$/
+  end
 
+  describe 'version' do
     it "shows its version via -v" do
       vendorer('-v').should == "#{Vendorer::VERSION}\n"
     end
@@ -62,7 +62,7 @@ describe Vendorer do
     end
   end
 
-  describe '.file' do
+  describe '#file' do
     def simple_vendorfile
       write 'Vendorfile', "file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'"
     end
@@ -152,7 +152,7 @@ describe Vendorer do
     end
   end
 
-  describe '.folder' do
+  describe '#folder' do
     before do
       write 'Vendorfile', "folder 'its_recursive', '../../.git'"
     end
@@ -189,7 +189,7 @@ describe Vendorer do
       read('its_recursive/Gemfile').should == 'Foo'
     end
 
-    describe 'update' do
+    describe '#update' do
       it "updates a folder" do
         vendorer
         write('its_recursive/Gemfile', 'Foo')

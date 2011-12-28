@@ -9,22 +9,22 @@ Vendorer
 Install
 -------
 
-1. Curl
-2. Git v1.7
-3. Ruby v1.8.7, v1.9.2, or v1.9.3
+Ensure you have:
 
-To install vendorer simply use:
+ - Curl
+ - Git v1.7+
+ - Ruby v1.8.7 or v1.9.2+
+
+then:
 
 ``` bash
 $ gem install vendorer
 ```
 
-Or add it to your `Gemfile`:
+Or add vendorer to your `Gemfile`:
 
 ``` ruby
-group :development do
-  gem 'vendorer'
-end
+gem 'vendorer', :group => :development
 ```
 
 
@@ -45,7 +45,7 @@ file 'vendor/assets/javascripts/jquery.js', 'http://code.jquery.com/jquery.js' d
 end
 
 # Checkout a specific :ref/:tag/:branch
-folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git', tag: 'v0.6.10'
+folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git', :tag => 'v0.6.10'
 
 # DRY folders
 folder 'vendor/assets/javascripts' do
@@ -54,9 +54,10 @@ end
 ```
 
 
-Call `vendorer install` or just `vendorer` to excute all of the installations.
-Update all dependencies with `vendorer update` or a single dependency with `vendorer update vendor/assets/javascripts/jquery.min.js`.
-You can even update everything in a specific folder: `vendorer update vendor/assets/javascripts`.
+ - excute all installations: `vendorer`
+ - Update all dependencies: `vendorer update`
+ - update a single dependency: `vendorer update vendor/assets/javascripts/jquery.min.js`
+ - update everything in a specific folder: `vendorer update vendor/assets/javascripts`
 
 
 TODO
@@ -65,6 +66,10 @@ TODO
 
 Author
 ======
+
+### [Contributors](http://github.com/grosser/vendorer/contributors)
+ - [Kurtis Rainbolt-Greene](https://github.com/krainboltgreene)
+
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>
 License: MIT<br/>

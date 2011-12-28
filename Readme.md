@@ -1,45 +1,62 @@
 Vendorer
+========
 
  - documented dependencies
  - automatic updates
  - no unwanted/accidental updates
 
-Install
-=======
-Install curl and git, then:
 
-    sudo gem install vendorer
+Install
+-------
+
+1. Curl
+2. Git v1.7
+3. Ruby v1.8.7, v1.9.2, or v1.9.3
+
+To install vendorer simply use:
+
+``` bash
+$ gem install vendorer
+```
+
+Or add it to your `Gemfile`:
+
+``` ruby
+group :development do
+  gem 'vendorer'
+end
+```
+
 
 Usage
-=====
+-----
+
 Add a `Vendorfile` to your project root:
 
-    file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'
-    folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'
 
-    # execute a block after updates
-    file 'public/javascripts/jquery.js', 'http://code.jquery.com/jquery.js' do |path|
-      puts "Do something useful with #{path}"
-      rewrite(path){|content| content.gsub(/\r\n/,\n).gsub(/\t/,'  ') }
-    end
+``` ruby
+file 'vendor/assets/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'
+folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'
 
-    # checkout a specific :ref/:tag/:branch
-    folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git', :tag => 'v0.6.10'
+# Execute a block after updates
+file 'vendor/assets/javascripts/jquery.js', 'http://code.jquery.com/jquery.js' do |path|
+  puts "Do something useful with #{path}"
+  rewrite(path) { |content| content.gsub(/\r\n/, \n).gsub /\t/, ' ' }
+end
 
-    # DRY folders
-    folder 'public/javascripts' do
-      file 'jquery.js', 'http://code.jquery.com/jquery-latest.js'
-    end
+# Checkout a specific :ref/:tag/:branch
+folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git', tag: 'v0.6.10'
 
-Call `vendorer`
+# DRY folders
+folder 'vendor/assets/javascripts' do
+  file 'jquery.js', 'http://code.jquery.com/jquery-latest.js'
+end
+```
 
-If you added something new: `vendorer`
 
-Update all dependencies: `vendorer update`
-
-Update one dependencies: `vendorer update public/javascripts/jquery.min.js`
-
-Update everything in a folder: `vendorer update public/javascripts`
+Call `vendorer install` or just `vendorer` to excute all of the installations.
+Update all dependencies with `vendorer update` or a single dependency with `vendorer update vendor/assets/javascripts/jquery.min.js`.
+You can even update everything in a specific folder: `vendorer update vendor/assets/javascripts`.
 
 
 TODO

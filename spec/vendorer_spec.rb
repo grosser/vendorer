@@ -74,6 +74,13 @@ describe Vendorer do
       read('public/javascripts/jquery.min.js').should include('jQuery')
     end
 
+    it "can download a file via redirect" do
+      # old github raw urls are redirected
+      write 'Vendorfile', "file 'xxx', 'https://github.com/grosser/vendorer/raw/master/Gemfile'"
+      vendorer
+      read('xxx').should include('rspec')
+    end
+
     it "does not update an existing file" do
       simple_vendorfile
       vendorer

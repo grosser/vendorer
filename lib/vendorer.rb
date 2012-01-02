@@ -14,7 +14,7 @@ class Vendorer
     path = complete_path(path)
     update_or_not path do
       run "mkdir -p #{File.dirname(path)}"
-      run "curl '#{url}' -o #{path}"
+      run "curl '#{url}' -L -o #{path}"
       raise "Downloaded empty file" unless File.exist?(path)
       yield path if block_given?
     end

@@ -315,7 +315,11 @@ describe Vendorer do
         run "cd #{folder} && git commit -am 'initial'"
       end
 
-      let(:vendorer){ Vendorer.new }
+      let(:vendorer){
+        v = Vendorer.new
+        def v.puts(x);end # silence
+        v
+      }
 
       it "installs submodules" do
         create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub'

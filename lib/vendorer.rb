@@ -47,6 +47,29 @@ class Vendorer
     File.open(path,'w'){|f| f.write(result) }
   end
 
+  def init
+      vendor_content = %s[# Example Vendorfile
+# file 'vendor/assets/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'
+# folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'
+
+# Execute a block after updates
+# file 'vendor/assets/javascripts/jquery.js', 'http://code.jquery.com/jquery.js' do |path|
+#   puts "Do something useful with #{path}"
+#   rewrite(path) { |content| content.gsub(/\r\n/, \n).gsub /\t/, ' ' }
+# end
+
+# Checkout a specific :ref/:tag/:branch
+# folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git', :tag => 'v0.6.10'
+
+# DRY folders
+# folder 'vendor/assets/javascripts' do
+#   file 'jquery.js', 'http://code.jquery.com/jquery-latest.js'
+# end]
+    File.open('Vendorfile', 'w') do |file|
+      file.write(vendor_content)
+    end
+  end
+
   private
 
   def update_or_not(path)

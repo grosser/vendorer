@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Vendorer do
   before do
+    Dir.chdir File.dirname(File.dirname(__FILE__))
     `rm -rf spec/tmp`
     `mkdir spec/tmp`
     Dir.chdir 'spec/tmp'
@@ -9,7 +10,6 @@ describe Vendorer do
 
   after do
     `rm -rf spec/tmp`
-    Dir.chdir File.dirname(File.dirname(__FILE__))
   end
 
   def write(file, content)

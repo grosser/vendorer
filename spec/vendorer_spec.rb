@@ -319,7 +319,9 @@ describe Vendorer do
 
       it "installs submodules" do
         create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub'
+
         vendorer.folder 'plugin', 'a/.git'
+
         run("ls -a plugin").should == ".\n..\n.gitmodules\nsub\n"
         run("ls -a plugin/sub").should include('Gemfile')
       end
@@ -327,7 +329,26 @@ describe Vendorer do
       it "installs recursive submodules" do
         create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub_a'
         create_git_repo 'b', 'git submodule add `cd ../a/.git && pwd` sub_b'
+
         vendorer.folder 'plugin', 'b/.git'
+
+        run("ls -a plugin").should == ".\n..\n.gitmodules\nsub_b\n"
+        run("ls -a plugin/sub_b").should == ".\n..\n.git\n.gitmodules\nsub_a\n"
+        run("ls -a plugin/sub_b/sub_a").should include('Gemfile')
+      end
+
+      it "installs recursive submodules from a branch" do
+        create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub_a'
+        create_git_repo 'b', 'touch .gitmodules'
+
+        # create submodules on a branch
+        run "cd b && git co -b with_submodules"
+        run "cd b && git submodule add `cd ../a/.git && pwd` sub_b"
+        run "cd b && git add . && git commit -am 'submodules'"
+        run "cd b && git checkout master"
+
+        vendorer.folder 'plugin', 'b/.git', :branch => 'with_submodules'
+
         run("ls -a plugin").should == ".\n..\n.gitmodules\nsub_b\n"
         run("ls -a plugin/sub_b").should == ".\n..\n.git\n.gitmodules\nsub_a\n"
         run("ls -a plugin/sub_b/sub_a").should include('Gemfile')

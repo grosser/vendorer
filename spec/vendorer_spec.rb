@@ -8,7 +8,7 @@ describe Vendorer do
   end
 
   after do
-    #`rm -rf spec/tmp`
+    `rm -rf spec/tmp`
     Dir.chdir File.dirname(File.dirname(__FILE__))
   end
 
@@ -17,11 +17,11 @@ describe Vendorer do
   end
 
   def read(file)
-    File.read("spec/tmp/#{file}")
+    File.read(file)
   end
 
   def size(file)
-    File.size("spec/tmp/#{file}")
+    File.size(file)
   end
 
   def run(cmd)
@@ -35,7 +35,7 @@ describe Vendorer do
   end
 
   def vendorer(args='', options={})
-    out = `cd spec/tmp && bundle exec ../../bin/vendorer #{args} 2>&1`
+    out = `bundle exec ../../bin/vendorer #{args} 2>&1`
     raise out if $?.success? == !!options[:raise]
     out
   end

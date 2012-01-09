@@ -15,6 +15,7 @@ Create a Vendorfile in your project root with:
     file 'public/javascripts/jquery.min.js' => 'http://code.jquery.com/jquery-latest.min.js'
     folder 'vendor/plugins/parallel_tests' => 'https://github.com/grosser/parallel_tests.git'
 
+Run `vendorer init` to create Vendorfile.
 Run `vendorer` to install.
 Run `vendorer update` to update.
 

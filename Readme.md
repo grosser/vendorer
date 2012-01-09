@@ -53,7 +53,7 @@ folder 'vendor/assets/javascripts' do
 end
 ```
 
-
+ - Create a new Vendorfile: `vendorer init`
  - excute all installations: `vendorer`
  - Update all dependencies: `vendorer update`
  - update a single dependency: `vendorer update vendor/assets/javascripts/jquery.min.js`

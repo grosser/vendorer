@@ -346,7 +346,7 @@ describe Vendorer do
         create_git_repo 'b', 'touch .gitmodules'
 
         # create submodules on a branch
-        run "cd b && git co -b with_submodules"
+        run "cd b && git checkout -b with_submodules"
         run "cd b && git submodule add `cd ../a/.git && pwd` sub_b"
         run "cd b && git add . && git commit -am 'submodules'"
         run "cd b && git checkout master"

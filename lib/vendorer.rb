@@ -47,6 +47,7 @@ class Vendorer
     File.open(path,'w'){|f| f.write(result) }
   end
 
+  # Creates Vendorfile with examples
   def init
       vendor_content = %s[# Example Vendorfile
 # file 'vendor/assets/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'

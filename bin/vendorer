@@ -30,5 +30,7 @@ end
 parser.parse!
 
 require 'vendorer'
-v = Vendorer.new(:update => (ARGV[1] || true if ARGV[0] == 'update'))
+v = Vendorer.new(:update => (ARGV[1] || true if ARGV[0] == 'update'),
+                 :init   => (true if ARGV[0] == 'init'))
+v.init and exit if ARGV[0] == 'init'
 v.parse(File.read('Vendorfile'))

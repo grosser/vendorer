@@ -382,4 +382,16 @@ describe Vendorer do
       $test.should == v
     end
   end
+
+  describe "#init" do
+    it "creates Vendorfile" do
+      Vendorer.new('init').init
+      read("Vendorfile").should include("Example")
+    end
+
+    it "creates Vendorfile via init" do
+      vendorer("init")
+      read("Vendorfile").should include("Example")
+    end
+  end
 end

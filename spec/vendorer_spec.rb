@@ -4,14 +4,16 @@ describe Vendorer do
   before do
     `rm -rf spec/tmp`
     `mkdir spec/tmp`
+    Dir.chdir 'spec/tmp'
   end
 
   after do
-    `rm -rf spec/tmp`
+    #`rm -rf spec/tmp`
+    Dir.chdir File.dirname(File.dirname(__FILE__))
   end
 
   def write(file, content)
-    File.open("spec/tmp/#{file}",'w'){|f| f.write(content) }
+    File.open(file,'w'){|f| f.write(content) }
   end
 
   def read(file)
@@ -23,13 +25,13 @@ describe Vendorer do
   end
 
   def run(cmd)
-    result = `cd spec/tmp && #{cmd} 2>&1`
+    result = `#{cmd} 2>&1`
     raise result unless $?.success?
     result
   end
 
   def ls(path)
-    `ls spec/tmp/#{path} 2>&1`.split("\n")
+    `ls #{path} 2>&1`.split("\n")
   end
 
   def vendorer(args='', options={})
@@ -300,6 +302,35 @@ describe Vendorer do
         "
         vendorer
         read('public/javascripts/jquery.js').should include('jQuery')
+      end
+    end
+
+    context "submodules" do
+      def create_git_repo(folder, command)
+        # create a git repo with a submodule
+        run "mkdir #{folder}"
+        run "cd #{folder} && git init"
+        run "cd #{folder} && #{command}"
+        run "cd #{folder} && git add ."
+        run "cd #{folder} && git commit -am 'initial'"
+      end
+
+      let(:vendorer){ Vendorer.new }
+
+      it "installs submodules" do
+        create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub'
+        vendorer.folder 'plugin', 'a/.git'
+        run("ls -a plugin").should == ".\n..\n.gitmodules\nsub\n"
+        run("ls -a plugin/sub").should include('Gemfile')
+      end
+
+      it "installs recursive submodules" do
+        create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub_a'
+        create_git_repo 'b', 'git submodule add `cd ../a/.git && pwd` sub_b'
+        vendorer.folder 'plugin', 'b/.git'
+        run("ls -a plugin").should == ".\n..\n.gitmodules\nsub_b\n"
+        run("ls -a plugin/sub_b").should == ".\n..\n.git\n.gitmodules\nsub_a\n"
+        run("ls -a plugin/sub_b/sub_a").should include('Gemfile')
       end
     end
   end

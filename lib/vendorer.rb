@@ -26,10 +26,11 @@ class Vendorer
       update_or_not path do
         run "rm -rf #{path}"
         run "mkdir -p #{File.dirname(path)}"
-        run "git clone '#{url}' #{path}"
+        run "git clone '#{url}' #{path} --recursive"
         if commit = (options[:ref] || options[:tag] || options[:branch])
           run "cd #{path} && git checkout '#{commit}'"
         end
+        #run("cd #{path} && git submodule init && git submodule update")
         run "rm -rf #{path}/.git"
         yield path if block_given?
       end

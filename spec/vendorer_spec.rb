@@ -389,29 +389,35 @@ describe Vendorer do
       read("Vendorfile").should include("folder")
     end
 
-    it "creates a Vendorfile via ruby" do
-      Vendorer.new('init').init
-      read("Vendorfile").should include("folder")
-    end
+    context "from ruby" do
+      before do
+        Dir.chdir '../../' if RUBY_VERSION < '1.9'
+      end
 
-    it "created Vendorfile contains commented out examples" do
-      Vendorer.new('init').init
-      read("Vendorfile").split("\n").each{|l| l.should =~ /^(#|\s*$)/ }
-    end
+      it "creates a Vendorfile via ruby" do
+        Vendorer.new('init').init
+        read("Vendorfile").should include("folder")
+      end
 
-    it "created Vendorfile contains many examples" do
-      Vendorer.new('init').init
-      read("Vendorfile").should include("folder 'vendor/")
-      read("Vendorfile").should include("file 'vendor/")
-      read("Vendorfile").should include("rewrite(path)")
-    end
+      it "created Vendorfile contains commented out examples" do
+        Vendorer.new('init').init
+        read("Vendorfile").split("\n").each{|l| l.should =~ /^(#|\s*$)/ }
+      end
 
-    it "created Vendorfile does not contain other instructions" do
-      Vendorer.new('init').init
-      read("Vendorfile").should_not include("vendorer init")
-      read("Vendorfile").should_not include("Gemfile")
-      read("Vendorfile").should_not include("gem install")
-      read("Vendorfile").should_not include("```")
+      it "created Vendorfile contains many examples" do
+        Vendorer.new('init').init
+        read("Vendorfile").should include("folder 'vendor/")
+        read("Vendorfile").should include("file 'vendor/")
+        read("Vendorfile").should include("rewrite(path)")
+      end
+
+      it "created Vendorfile does not contain other instructions" do
+        Vendorer.new('init').init
+        read("Vendorfile").should_not include("vendorer init")
+        read("Vendorfile").should_not include("Gemfile")
+        read("Vendorfile").should_not include("gem install")
+        read("Vendorfile").should_not include("```")
+      end
     end
   end
 end

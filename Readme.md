@@ -34,6 +34,7 @@ Usage
 Add a `Vendorfile` to your project root:
 
 
+<!-- extracted by vendorer init -->
 ``` ruby
 file 'vendor/assets/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'
 folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'
@@ -52,6 +53,7 @@ folder 'vendor/assets/javascripts' do
   file 'jquery.js', 'http://code.jquery.com/jquery-latest.js'
 end
 ```
+<!-- extracted by vendorer init -->
 
  - Create a new Vendorfile: `vendorer init`
  - excute all installations: `vendorer`

@@ -386,12 +386,12 @@ describe Vendorer do
   describe "#init" do
     it "creates a Vendorfile via cli" do
       vendorer("init")
-      read("Vendorfile").should include("Example")
+      read("Vendorfile").should include("folder")
     end
 
     it "creates a Vendorfile via ruby" do
       Vendorer.new('init').init
-      read("Vendorfile").should include("Example")
+      read("Vendorfile").should include("folder")
     end
 
     it "created Vendorfile contains commented out examples" do
@@ -411,6 +411,7 @@ describe Vendorer do
       read("Vendorfile").should_not include("vendorer init")
       read("Vendorfile").should_not include("Gemfile")
       read("Vendorfile").should_not include("gem install")
+      read("Vendorfile").should_not include("```")
     end
   end
 end

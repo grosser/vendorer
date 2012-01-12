@@ -384,14 +384,33 @@ describe Vendorer do
   end
 
   describe "#init" do
-    it "creates Vendorfile" do
+    it "creates a Vendorfile via cli" do
+      vendorer("init")
+      read("Vendorfile").should include("Example")
+    end
+
+    it "creates a Vendorfile via ruby" do
       Vendorer.new('init').init
       read("Vendorfile").should include("Example")
     end
 
-    it "creates Vendorfile via init" do
-      vendorer("init")
-      read("Vendorfile").should include("Example")
+    it "created Vendorfile contains commented out examples" do
+      Vendorer.new('init').init
+      read("Vendorfile").split("\n").each{|l| l.should =~ /^(#|\s*$)/ }
+    end
+
+    it "created Vendorfile contains many examples" do
+      Vendorer.new('init').init
+      read("Vendorfile").should include("folder 'vendor/")
+      read("Vendorfile").should include("file 'vendor/")
+      read("Vendorfile").should include("rewrite(path)")
+    end
+
+    it "created Vendorfile does not contain other instructions" do
+      Vendorer.new('init').init
+      read("Vendorfile").should_not include("vendorer init")
+      read("Vendorfile").should_not include("Gemfile")
+      read("Vendorfile").should_not include("gem install")
     end
   end
 end

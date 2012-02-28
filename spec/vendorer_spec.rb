@@ -381,6 +381,12 @@ describe Vendorer do
       v.parse '$test = self'
       $test.should == v
     end
+
+    it "fails with a nice backtrace" do
+      write 'Vendorfile', "\n\nfile 'XXX'\n\n"
+      output = vendorer '', :raise => true
+      output.should include("from Vendorfile:3:in `parse")
+    end
   end
 
   describe "#init" do

@@ -7,7 +7,7 @@ class Vendorer
   end
 
   def parse(content)
-    eval(content)
+    eval(content, nil, 'Vendorfile', 1)
   end
 
   def file(path, url)

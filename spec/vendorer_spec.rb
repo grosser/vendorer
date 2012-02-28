@@ -186,6 +186,14 @@ describe Vendorer do
       read('its_recursive/Gemfile').should include('rake')
     end
 
+    it "can handle a trailing slash" do
+      write 'Vendorfile', "folder 'its_recursive/', '../../.git'"
+      output = vendorer
+      ls('').should == ["its_recursive", "Vendorfile"]
+      read('its_recursive/Gemfile').should include('rake')
+      output.should_not include('//')
+    end
+
     it "does not keep .git folder so everything can be checked in" do
       vendorer
       ls('its_recursive/.git').first.should include('cannot access')
@@ -302,6 +310,13 @@ describe Vendorer do
         "
         vendorer
         read('public/javascripts/jquery.js').should include('jQuery')
+      end
+
+      it "can handle trailing slash" do
+        write 'Vendorfile', read('Vendorfile').sub("javascripts' do", "javascripts/' do")
+        output = vendorer
+        read('public/javascripts/jquery.js').should include('jQuery')
+        output.should_not include('//')
       end
     end
 

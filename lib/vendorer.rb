@@ -82,6 +82,6 @@ class Vendorer
   end
 
   def complete_path(path)
-    (@sub_path + [path]).join('/')
+    File.join(@sub_path + [path])
   end
 end

@@ -441,4 +441,40 @@ describe Vendorer do
       end
     end
   end
+  
+  describe "#from" do
+    def valid_vendorfile
+      write "Vendorfile", "
+      from '../../.git', :tag => 'b1e6460' do
+        file 'Readme.md'
+        file 'Rakefile.renamed', 'Rakefile'
+        folder 'spec'
+        folder 'spec-renamed', 'spec'
+      end
+      "
+    end
+    
+    def bogus_vendorfile
+      write "Vendorfile", "
+      from '../../.git', :tag => 'b1e6460' do
+        file 'bogus'
+      end
+      "
+    end
+    
+    it "copies appropriate files and folders" do
+      valid_vendorfile
+      vendorer
+      ls(".").sort.should == ['Rakefile.renamed', 'Readme.md', 'Vendorfile', 'spec', 'spec-renamed']
+      %w(spec spec-renamed).each do |spec|
+        ls(spec).should == ['spec_helper.rb', 'vendorer_spec.rb']
+      end
+    end
+    
+    it "gives 'not found' error for non-existent file" do
+      bogus_vendorfile
+      output = vendorer '', :raise => true
+      output.should include("'bogus' not found in ../../.git")
+    end
+  end
 end

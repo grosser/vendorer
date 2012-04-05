@@ -170,7 +170,7 @@ describe Vendorer do
       write 'Vendorfile', "folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tests.git'"
       vendorer
       ls('vendor/plugins').should == ["parallel_tests"]
-      read('vendor/plugins/parallel_tests/Gemfile').should include('parallel')
+      read('vendor/plugins/parallel_tests/Gemfile').should include('cucumber')
     end
 
     it "reports errors when the Vendorfile is broken" do

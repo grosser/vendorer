@@ -441,4 +441,96 @@ describe Vendorer do
       end
     end
   end
+
+  describe "#from" do
+    it "returns to normal after the block" do
+      write "Vendorfile", "
+          from '../../.git' do
+            file 'Readme.md'
+          end
+          file 'jquery.js', 'http://code.jquery.com/jquery-latest.min.js'
+        "
+      vendorer
+      ls(".").should =~ ['Readme.md', 'Vendorfile', 'jquery.js']
+      read('jquery.js').should include("jQuery")
+    end
+
+    it "can checkout a specific version" do
+      write "Vendorfile", "
+          from '../../.git', :tag => 'v0.1.0' do
+            file 'lib/vendorer/version.rb'
+          end
+        "
+      vendorer
+      read('lib/vendorer/version.rb').should include("0.1.0")
+    end
+
+    context "with file" do
+      it "copies" do
+        write "Vendorfile", "
+          from '../../.git' do
+            file 'Readme.md'
+          end
+        "
+        vendorer
+        ls(".").should == ['Readme.md', 'Vendorfile']
+      end
+
+      it "copies to/from a nested location" do
+        write "Vendorfile", "
+          from '../../.git' do
+            file 'foo/bar/renamed.rb', 'lib/vendorer.rb'
+          end
+        "
+        vendorer
+        ls(".").should == ['foo', 'Vendorfile']
+        ls("./foo/bar").should == ['renamed.rb']
+      end
+
+      it "renames" do
+        write "Vendorfile", "
+          from '../../.git' do
+            file 'Readme.renamed', 'Readme.md'
+          end
+        "
+        vendorer
+        ls(".").should == ['Readme.renamed', 'Vendorfile']
+      end
+    end
+
+    context "with folder" do
+      it "copies" do
+        write "Vendorfile", "
+          from '../../.git' do
+            folder 'lib'
+          end
+        "
+        vendorer
+        ls(".").should == ['lib', 'Vendorfile']
+        ls("./lib").should == ['vendorer','vendorer.rb']
+      end
+
+      it "copies to/from a nested location" do
+        write "Vendorfile", "
+          from '../../.git' do
+            folder 'foo/bar', 'lib/vendorer'
+          end
+        "
+        vendorer
+        ls(".").should == ['foo', 'Vendorfile']
+        ls("./foo/bar").should == ['version.rb']
+      end
+
+      it "renames" do
+        write "Vendorfile", "
+          from '../../.git' do
+            folder 'foo', 'lib'
+          end
+        "
+        vendorer
+        ls(".").should == ['foo', 'Vendorfile']
+        ls("./foo").should == ['vendorer','vendorer.rb']
+      end
+    end
+  end
 end

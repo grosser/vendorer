@@ -1,4 +1,5 @@
 require 'tempfile'
+require 'tmpdir'
 
 class Vendorer
   def initialize(options={})
@@ -10,34 +11,51 @@ class Vendorer
     eval(content, nil, 'Vendorfile', 1)
   end
 
-  def file(path, url)
+  def file(path, url=nil)
     path = complete_path(path)
     update_or_not path do
       run "mkdir -p #{File.dirname(path)}"
-      run "curl '#{url}' -L -o #{path}"
-      raise "Downloaded empty file" unless File.exist?(path)
+      if @copy_from
+        run "cp #{@copy_from}/#{url || path} #{path}"
+      else
+        run "curl '#{url}' -L -o #{path}"
+        raise "Downloaded empty file" unless File.exist?(path)
+      end
       yield path if block_given?
     end
   end
 
   def folder(path, url=nil, options={})
-    if url
+    if url or @copy_from
       path = complete_path(path)
       update_or_not path do
         run "rm -rf #{path}"
         run "mkdir -p #{File.dirname(path)}"
-        run "git clone '#{url}' #{path}"
-        if commit = (options[:ref] || options[:tag] || options[:branch])
-          run "cd #{path} && git checkout '#{commit}'"
+        if @copy_from
+          run "cp -R #{@copy_from}/#{url || path} #{path}"
+        else
+          run "git clone '#{url}' #{path}"
+          if commit = (options[:ref] || options[:tag] || options[:branch])
+            run "cd #{path} && git checkout '#{commit}'"
+          end
+          run("cd #{path} && git submodule update --init --recursive")
+          run "rm -rf #{path}/.git"
         end
-        run("cd #{path} && git submodule update --init --recursive")
-        run "rm -rf #{path}/.git"
         yield path if block_given?
       end
     else
       @sub_path << path
       yield
       @sub_path.pop
+    end
+  end
+
+  def from(url, options={})
+    folder "tmp-#{rand 999999}", url, options do |folder|
+      @copy_from = folder
+      yield
+      @copy_from = nil
+      run "rm -rf #{folder}"
     end
   end
 

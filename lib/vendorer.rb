@@ -10,28 +10,31 @@ class Vendorer
     eval(content, nil, 'Vendorfile', 1)
   end
 
-  def file(path, url)
+  def file(path, url=nil)
     path = complete_path(path)
     update_or_not path do
       run "mkdir -p #{File.dirname(path)}"
-      run "curl '#{url}' -L -o #{path}"
-      raise "Downloaded empty file" unless File.exist?(path)
+      if @from_git
+        copy_from_git(path, url)
+      else
+        run "curl '#{url}' -L -o #{path}"
+        raise "Downloaded empty file" unless File.exist?(path)
+      end
       yield path if block_given?
     end
   end
 
   def folder(path, url=nil, options={})
-    if url
+    if @from_git || url
       path = complete_path(path)
       update_or_not path do
         run "rm -rf #{path}"
         run "mkdir -p #{File.dirname(path)}"
-        run "git clone '#{url}' #{path}"
-        if commit = (options[:ref] || options[:tag] || options[:branch])
-          run "cd #{path} && git checkout '#{commit}'"
+        if @from_git
+          copy_from_git(path, url)
+        else
+          git_clone(path, url, options)
         end
-        run("cd #{path} && git submodule update --init --recursive")
-        run "rm -rf #{path}/.git"
         yield path if block_given?
       end
     else
@@ -59,6 +62,15 @@ class Vendorer
     File.open('Vendorfile', 'w') { |f| f.write(examples.strip) }
   end
 
+  def from(url, options={})
+    Dir.mktmpdir do |tmpdir|
+      git_clone tmpdir, url, options
+      @from_git, @from_path = url, tmpdir
+      yield
+      @from_git = @from_path = nil
+    end
+  end
+
   private
 
   def update_or_not(path)
@@ -83,5 +95,21 @@ class Vendorer
 
   def complete_path(path)
     File.join(@sub_path + [path])
+  end
+
+  def git_clone(path, url, options)
+    run "git clone '#{url}' #{path}"
+    if commit = (options[:ref] || options[:tag] || options[:branch])
+      run "cd #{path} && git checkout '#{commit}'"
+    end
+    run("cd #{path} && git submodule update --init --recursive")
+    run "rm -rf #{path}/.git"
+  end
+
+  def copy_from_git(dest_path, src_path)
+    src_path = dest_path if src_path.nil?
+    copy_from = File.join(@from_path, src_path)
+    raise "'#{src_path}' not found in #{@from_git}" unless File.exist?(copy_from)
+    run "cp -Rp #{copy_from} #{dest_path}"
   end
 end

@@ -72,6 +72,7 @@ Author
 ### [Contributors](http://github.com/grosser/vendorer/contributors)
  - [Kurtis Rainbolt-Greene](https://github.com/krainboltgreene)
  - [Ivan K.](https://github.com/divout)
+ - [Matt Brictson](https://github.com/mbrictson)
 
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>

@@ -13,7 +13,7 @@ describe Vendorer do
   end
 
   def write(file, content)
-    File.open(file,'w'){|f| f.write(content) }
+    File.open(file, 'w') { |f| f.write(content) }
   end
 
   def read(file)
@@ -138,9 +138,9 @@ describe Vendorer do
         simple_vendorfile
         vendorer
         run 'chmod 711 public/javascripts/jquery.min.js'
-        lambda{
+        lambda {
           vendorer 'update'
-        }.should_not change{ run('ls -l public/javascripts').split("\n") }
+        }.should_not change { run('ls -l public/javascripts').split("\n") }
       end
     end
 
@@ -280,7 +280,7 @@ describe Vendorer do
 
       it "can update a nested file" do
         vendorer
-        write('public/javascripts/jquery.js','Foo')
+        write('public/javascripts/jquery.js', 'Foo')
         vendorer 'update'
         read('public/javascripts/jquery.js').should include('jQuery')
       end
@@ -293,8 +293,8 @@ describe Vendorer do
         file 'xxx.js', 'http://code.jquery.com/jquery-latest.min.js'
         "
         vendorer
-        write('public/javascripts/jquery.js','Foo')
-        write('xxx.js','Foo')
+        write('public/javascripts/jquery.js', 'Foo')
+        write('xxx.js', 'Foo')
         vendorer 'update public/javascripts'
         read('xxx.js').should == "Foo"
         read('public/javascripts/jquery.js').should include('jQuery')
@@ -330,9 +330,10 @@ describe Vendorer do
         run "cd #{folder} && git commit -am 'initial'"
       end
 
-      let(:vendorer){
+      let(:vendorer) {
         v = Vendorer.new
-        def v.puts(x);end # silence
+        def v.puts(x) # silence
+        end
         v
       }
 
@@ -422,7 +423,7 @@ describe Vendorer do
 
       it "created Vendorfile contains commented out examples" do
         Vendorer.new('init').init
-        read("Vendorfile").split("\n").each{|l| l.should =~ /^(#|\s*$)/ }
+        read("Vendorfile").split("\n").each { |l| l.should =~ /^(#|\s*$)/ }
       end
 
       it "created Vendorfile contains many examples" do
@@ -441,38 +442,105 @@ describe Vendorer do
       end
     end
   end
-  
+
   describe "#from" do
-    def valid_vendorfile
+    it "returns to normal after the block" do
       write "Vendorfile", "
-      from '../../.git', :tag => 'b1e6460' do
-        file 'Readme.md'
-        file 'Rakefile.renamed', 'Rakefile'
-        folder 'spec'
-        folder 'spec-renamed', 'spec'
-      end
+        from '../../.git' do
+          file 'Readme.md'
+        end
+        file 'jquery.js', 'http://code.jquery.com/jquery-latest.min.js'
       "
-    end
-    
-    def bogus_vendorfile
-      write "Vendorfile", "
-      from '../../.git', :tag => 'b1e6460' do
-        file 'bogus'
-      end
-      "
-    end
-    
-    it "copies appropriate files and folders" do
-      valid_vendorfile
       vendorer
-      ls(".").sort.should == ['Rakefile.renamed', 'Readme.md', 'Vendorfile', 'spec', 'spec-renamed']
-      %w(spec spec-renamed).each do |spec|
-        ls(spec).should == ['spec_helper.rb', 'vendorer_spec.rb']
+      ls(".").should =~ ['Readme.md', 'Vendorfile', 'jquery.js']
+      read('jquery.js').should include("jQuery")
+    end
+
+    it "can checkout a specific version" do
+      write "Vendorfile", "
+          from '../../.git', :tag => 'v0.1.0' do
+            file 'lib/vendorer/version.rb'
+          end
+        "
+      vendorer
+      read('lib/vendorer/version.rb').should include("0.1.0")
+    end
+
+    context "with file" do
+      it "copies" do
+        write "Vendorfile", "
+          from '../../.git' do
+            file 'Readme.md'
+          end
+        "
+        vendorer
+        ls(".").should == ['Readme.md', 'Vendorfile']
+      end
+
+      it "copies to/from a nested location" do
+        write "Vendorfile", "
+          from '../../.git' do
+            file 'foo/bar/renamed.rb', 'lib/vendorer.rb'
+          end
+        "
+        vendorer
+        ls(".").should == ['foo', 'Vendorfile']
+        ls("./foo/bar").should == ['renamed.rb']
+      end
+
+      it "renames" do
+        write "Vendorfile", "
+          from '../../.git' do
+            file 'Readme.renamed', 'Readme.md'
+          end
+        "
+        vendorer
+        ls(".").should == ['Readme.renamed', 'Vendorfile']
       end
     end
-    
+
+    context "with folder" do
+      it "copies" do
+        write "Vendorfile", "
+          from '../../.git' do
+            folder 'lib'
+          end
+        "
+        vendorer
+        ls(".").should == ['lib', 'Vendorfile']
+        ls("./lib").should == ['vendorer', 'vendorer.rb']
+      end
+
+      it "copies to/from a nested location" do
+        write "Vendorfile", "
+          from '../../.git' do
+            folder 'foo/bar', 'lib/vendorer'
+          end
+        "
+        vendorer
+        ls(".").should == ['foo', 'Vendorfile']
+        ls("./foo/bar").should == ['version.rb']
+      end
+
+      it "renames" do
+        write "Vendorfile", "
+          from '../../.git' do
+            folder 'foo', 'lib'
+          end
+        "
+        vendorer
+        ls(".").should == ['foo', 'Vendorfile']
+        ls("./foo").should == ['vendorer', 'vendorer.rb']
+      end
+    end
+
+
     it "gives 'not found' error for non-existent file" do
-      bogus_vendorfile
+      write "Vendorfile", "
+        from '../../.git', :tag => 'b1e6460' do
+          file 'bogus'
+        end
+      "
       output = vendorer '', :raise => true
       output.should include("'bogus' not found in ../../.git")
     end

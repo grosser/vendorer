@@ -1,4 +1,5 @@
 require 'tempfile'
+require 'tmpdir'
 
 class Vendorer
   def initialize(options={})

@@ -534,7 +534,6 @@ describe Vendorer do
       end
     end
 
-
     it "gives 'not found' error for non-existent file" do
       write "Vendorfile", "
         from '../../.git', :tag => 'b1e6460' do

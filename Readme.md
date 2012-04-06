@@ -52,6 +52,14 @@ folder 'vendor/plugins/parallel_tests', 'https://github.com/grosser/parallel_tes
 folder 'vendor/assets/javascripts' do
   file 'jquery.js', 'http://code.jquery.com/jquery-latest.js'
 end
+
+# Copy files & folders from repos (also works with private repos)
+from 'https://github.com/grosser/parallel_tests.git' do
+  file 'Readme.md'
+  file 'target-folder/file.rb', 'lib/parallel_tests.rb'
+  folder 'spec'
+  folder 'renamed-folder', 'spec'
+end
 ```
 <!-- extracted by vendorer init -->
 

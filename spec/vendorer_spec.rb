@@ -95,7 +95,7 @@ describe Vendorer do
       write 'Vendorfile', "file 'xxx.js', 'http://NOTFOUND'"
       result = vendorer '', :raise => true
       # different errors on travis / local
-      raise result unless result.include?("resolve host 'NOTFOUND'") or result.include?('Downloaded empty file')
+      raise result unless result.include?("NOTFOUND") or result.include?('Downloaded empty file')
     end
 
     describe "with update" do
@@ -182,21 +182,21 @@ describe Vendorer do
 
     it "can download from local" do
       vendorer
-      ls('').should == ["its_recursive", "Vendorfile"]
+      ls('').should =~ ["its_recursive", "Vendorfile"]
       read('its_recursive/Gemfile').should include('rake')
     end
 
     it "can handle a trailing slash" do
       write 'Vendorfile', "folder 'its_recursive/', '../../.git'"
       output = vendorer
-      ls('').should == ["its_recursive", "Vendorfile"]
+      ls('').should =~ ["its_recursive", "Vendorfile"]
       read('its_recursive/Gemfile').should include('rake')
       output.should_not include('//')
     end
 
     it "does not keep .git folder so everything can be checked in" do
       vendorer
-      ls('its_recursive/.git').first.should include('cannot access')
+      ls('its_recursive/.git').first.should =~ /cannot access|No such file or directory/
     end
 
     it "does not update an existing folder" do
@@ -474,7 +474,7 @@ describe Vendorer do
           end
         "
         vendorer
-        ls(".").should == ['Readme.md', 'Vendorfile']
+        ls(".").should =~ ['Readme.md', 'Vendorfile']
       end
 
       it "copies to/from a nested location" do
@@ -484,8 +484,8 @@ describe Vendorer do
           end
         "
         vendorer
-        ls(".").should == ['foo', 'Vendorfile']
-        ls("./foo/bar").should == ['renamed.rb']
+        ls(".").should =~ ['foo', 'Vendorfile']
+        ls("./foo/bar").should =~ ['renamed.rb']
       end
 
       it "renames" do
@@ -495,7 +495,7 @@ describe Vendorer do
           end
         "
         vendorer
-        ls(".").should == ['Readme.renamed', 'Vendorfile']
+        ls(".").should =~ ['Readme.renamed', 'Vendorfile']
       end
     end
 
@@ -507,8 +507,8 @@ describe Vendorer do
           end
         "
         vendorer
-        ls(".").should == ['lib', 'Vendorfile']
-        ls("./lib").should == ['vendorer', 'vendorer.rb']
+        ls(".").should =~ ['lib', 'Vendorfile']
+        ls("./lib").should =~ ['vendorer', 'vendorer.rb']
       end
 
       it "copies to/from a nested location" do
@@ -518,8 +518,8 @@ describe Vendorer do
           end
         "
         vendorer
-        ls(".").should == ['foo', 'Vendorfile']
-        ls("./foo/bar").should == ['version.rb']
+        ls(".").should =~ ['foo', 'Vendorfile']
+        ls("./foo/bar").should =~ ['version.rb']
       end
 
       it "renames" do
@@ -529,8 +529,8 @@ describe Vendorer do
           end
         "
         vendorer
-        ls(".").should == ['foo', 'Vendorfile']
-        ls("./foo").should == ['vendorer', 'vendorer.rb']
+        ls(".").should =~ ['foo', 'Vendorfile']
+        ls("./foo").should =~ ['vendorer', 'vendorer.rb']
       end
     end
 
@@ -545,9 +545,9 @@ describe Vendorer do
           end
         "
         vendorer
-        ls(".").should == ['foo', 'Vendorfile']
-        ls("./foo").should == ['Gemfile', 'lib']
-        ls("./foo/lib").should == ['vendorer', 'vendorer.rb']
+        ls(".").should =~ ['foo', 'Vendorfile']
+        ls("./foo").should =~ ['Gemfile', 'lib']
+        ls("./foo/lib").should =~ ['vendorer', 'vendorer.rb']
       end
     end
 

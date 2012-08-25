@@ -12,31 +12,31 @@ class Vendorer
   end
 
   def file(path, url=nil)
-    path = complete_path(path)
-    update_or_not path do
-      run "mkdir -p #{File.dirname(path)}"
+    target_path = complete_path(path)
+    update_or_not target_path do
+      run "mkdir -p #{File.dirname(target_path)}"
       if @copy_from_url
-        copy_from_path(path, url)
+        copy_from_path(target_path, url || path)
       else
-        run "curl '#{url}' -L -o #{path}"
-        raise "Downloaded empty file" unless File.exist?(path)
+        run "curl '#{url}' -L -o #{target_path}"
+        raise "Downloaded empty file" unless File.exist?(target_path)
       end
-      yield path if block_given?
+      yield target_path if block_given?
     end
   end
 
   def folder(path, url=nil, options={})
     if @copy_from_path or url
-      path = complete_path(path)
-      update_or_not path do
-        run "rm -rf #{path}"
-        run "mkdir -p #{File.dirname(path)}"
+      target_path = complete_path(path)
+      update_or_not target_path do
+        run "rm -rf #{target_path}"
+        run "mkdir -p #{File.dirname(target_path)}"
         if @copy_from_path
-          copy_from_path(path, url)
+          copy_from_path(target_path, url || path)
         else
-          download_repository(url, path, options)
+          download_repository(url, target_path, options)
         end
-        yield path if block_given?
+        yield target_path if block_given?
       end
     else
       @sub_path << path

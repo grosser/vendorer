@@ -534,6 +534,23 @@ describe Vendorer do
       end
     end
 
+    context "with folder nesting" do
+      it "copies" do
+        write "Vendorfile", "
+          folder 'foo' do
+            from '../../.git' do
+              folder 'lib'
+              file 'Gemfile'
+            end
+          end
+        "
+        vendorer
+        ls(".").should == ['foo', 'Vendorfile']
+        ls("./foo").should == ['Gemfile', 'lib']
+        ls("./foo/lib").should == ['vendorer', 'vendorer.rb']
+      end
+    end
+
     it "gives 'not found' error for non-existent file" do
       write "Vendorfile", "
         from '../../.git', :tag => 'b1e6460' do

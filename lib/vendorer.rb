@@ -18,7 +18,7 @@ class Vendorer
       if @copy_from_url
         copy_from_path(target_path, url || path)
       else
-        run "curl '#{url}' -L -o #{target_path}"
+        run "curl '#{url}' -L --compressed -o #{target_path}"
         raise "Downloaded empty file" unless File.exist?(target_path)
       end
       yield target_path if block_given?

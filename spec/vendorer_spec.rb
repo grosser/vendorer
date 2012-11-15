@@ -159,6 +159,18 @@ describe Vendorer do
         vendorer.should_not include(@output)
       end
     end
+
+    context "with a compressed resource" do
+      def vendorfile_for_compressed_resource
+        write 'Vendorfile', "file 'public/javascripts/highcharts.js', 'http://code.highcharts.com/highcharts.js'"
+      end
+
+      it "decompresses to plain text" do
+        vendorfile_for_compressed_resource
+        vendorer
+        read('public/javascripts/highcharts.js').should include('Highcharts')
+      end
+    end
   end
 
   describe '#folder' do

@@ -1,7 +1,7 @@
 Vendorer
 ========
 
- - documented dependencies
+ - documented & cached dependencies
  - automatic updates
  - no unwanted/accidental updates
 

@@ -478,6 +478,13 @@ describe Vendorer do
       read('lib/vendorer/version.rb').should include("0.1.0")
     end
 
+    it "passes the path to the working copy to the block" do
+      write "Vendorfile", "
+          from('../../.git'){|path| puts `ls #\{path}` }
+        "
+      vendorer.should include('vendorer.gemspec')
+    end
+
     context "with file" do
       it "copies" do
         write "Vendorfile", "

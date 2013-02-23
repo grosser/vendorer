@@ -81,8 +81,9 @@ Author
  - [Kurtis Rainbolt-Greene](https://github.com/krainboltgreene)
  - [Ivan K.](https://github.com/divout)
  - [Matt Brictson](https://github.com/mbrictson)
+ - [Andreas Haller](https://github.com/ahx)
 
 [Michael Grosser](http://grosser.it)<br/>
 michael@grosser.it<br/>
 License: MIT<br/>
-[![Build Status](https://secure.travis-ci.org/grosser/vendorer.png)](http://travis-ci.org/grosser/vendorer)
+[![Build Status](https://travis-ci.org/grosser/vendorer.png)](https://travis-ci.org/grosser/vendorer)

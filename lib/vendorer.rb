@@ -67,7 +67,7 @@ class Vendorer
     Dir.mktmpdir do |tmpdir|
       download_repository url, tmpdir, options
       @copy_from_url, @copy_from_path = url, tmpdir
-      yield
+      yield(@copy_from_path)
       @copy_from_url = @copy_from_path = nil
     end
   end

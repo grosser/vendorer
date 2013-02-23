@@ -54,7 +54,7 @@ folder 'vendor/assets/javascripts' do
 end
 
 # Copy files & folders from repos (also works with private repos)
-from 'https://github.com/grosser/parallel_tests.git' do
+from 'https://github.com/grosser/parallel_tests.git' do |checkout_location|
   file 'Readme.md'
   file 'target-folder/file.rb', 'lib/parallel_tests.rb'
   folder 'spec'

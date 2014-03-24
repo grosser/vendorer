@@ -70,6 +70,10 @@ end
  - update everything in a specific folder: `vendorer update vendor/assets/javascripts`
 
 
+Alternatives
+============
+ - [Vendorificator](https://github.com/3ofcoins/vendorificator) more features/complexity, but similar interface/concept
+
 TODO
 ====
  - nice error message when no Vendorfile was found

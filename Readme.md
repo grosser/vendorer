@@ -31,7 +31,7 @@ gem 'vendorer', :group => :development
 Usage
 -----
 
-Add a `Vendorfile` to your project root:
+Add a `Vendorfile` (or `Vendorfile.rb`) to your project root:
 
 
 <!-- extracted by vendorer init -->

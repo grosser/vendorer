@@ -4,7 +4,7 @@ PATH
     vendorer (0.1.14)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     bump (0.3.9)
     diff-lcs (1.1.3)

@@ -78,7 +78,7 @@ describe Vendorer do
 
     it "can download a file via redirect" do
       # old github raw urls are redirected
-      write 'Vendorfile', "file 'xxx', 'https://github.com/grosser/vendorer/raw/master/Gemfile'"
+      write 'Vendorfile', "file 'xxx', 'http://raw.github.com/grosser/vendorer/master/Gemfile'"
       vendorer
       read('xxx').should include('rspec')
     end

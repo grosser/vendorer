@@ -64,6 +64,12 @@ describe Vendorer do
     end
   end
 
+  it "can use Vendorfile.rb" do
+    write 'Vendorfile.rb', "file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'"
+    vendorer
+    read('public/javascripts/jquery.min.js').should include('jQuery')
+  end
+
   describe '#file' do
     def simple_vendorfile
       write 'Vendorfile', "file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/jquery-latest.min.js'"

@@ -34,6 +34,6 @@ require 'vendorer'
 v = Vendorer.new(:update => (ARGV[1] || true if ARGV[0] == 'update'),
                  :init   => (true if ARGV[0] == 'init'))
 v.init and exit if ARGV[0] == 'init'
-config_file = 'Vendorfile.rb'
-config_file = 'Vendorfile' if File.exists?('Vendorfile')
-v.parse(File.read(config_file))
+config_locations = ['Vendorfile.rb', 'Vendorfile']
+config_location = config_locations.detect { |f| File.exist?(f) } || config_locations.last
+v.parse(File.read(config_location))

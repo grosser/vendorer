@@ -1,4 +1,7 @@
-before_script: "git fetch --unshallow" # we need a full clone for tests
+before_script:
+ - git fetch --unshallow # we need a full clone for tests
+ - git config --global user.email "you@example.com"
+ - git config --global user.name "Your Name"
 script: "bundle exec rake"
 rvm:
   - 1.9.3

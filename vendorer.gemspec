@@ -6,7 +6,7 @@ Gem::Specification.new name, Vendorer::VERSION do |s|
   s.authors = ["Michael Grosser"]
   s.email = "michael@grosser.it"
   s.homepage = "https://github.com/grosser/#{name}"
-  s.files = `git ls-files lib`.split("\n") << "Readme.md"
+  s.files = `git ls-files lib Readme.md`.split("\n")
   s.license = 'MIT'
   s.executables = ["vendorer"]
 end

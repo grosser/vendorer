@@ -18,13 +18,13 @@ Ensure you have:
 then:
 
 ``` bash
-$ gem install vendorer
+gem install vendorer
 ```
 
-Or add vendorer to your `Gemfile`:
-
-``` ruby
-gem 'vendorer', :group => :development
+or standalone
+```Bash
+curl https://rubinjam.herokuapp.com/pack/vendorer > vendorer && chmod +x vendorer
+./vendorer -v
 ```
 
 

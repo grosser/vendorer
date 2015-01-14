@@ -1,15 +1,11 @@
 require 'spec_helper'
+require 'tmpdir'
 
 describe Vendorer do
-  before do
-    Dir.chdir File.dirname(File.dirname(__FILE__))
-    `rm -rf spec/tmp`
-    `mkdir spec/tmp`
-    Dir.chdir 'spec/tmp'
-  end
-
-  after do
-    `rm -rf spec/tmp`
+  around do |example|
+    Dir.mktmpdir do |dir|
+      Dir.chdir(dir, &example)
+    end
   end
 
   def write(file, content)
@@ -35,7 +31,7 @@ describe Vendorer do
   end
 
   def vendorer(args='', options={})
-    out = `bundle exec ../../bin/vendorer #{args} 2>&1`
+    out = `#{Bundler.root}/bin/vendorer #{args} 2>&1`
     raise out if $?.success? == !!options[:raise]
     out
   end
@@ -80,6 +76,11 @@ describe Vendorer do
       vendorer
       ls('public/javascripts').should == ["jquery.min.js"]
       read('public/javascripts/jquery.min.js').should include('jQuery')
+    end
+
+    it "cannot download a missing file" do
+      write 'Vendorfile', "file 'public/javascripts/jquery.min.js', 'http://code.jquery.com/sdfsddsfdsfdsf'"
+      vendorer '', :raise => true
     end
 
     it "can download a file via redirect" do
@@ -181,7 +182,7 @@ describe Vendorer do
 
   describe '#folder' do
     before do
-      write 'Vendorfile', "folder 'its_recursive', '../../.git'"
+      write 'Vendorfile', "folder 'its_recursive', '#{Bundler.root}/.git'"
     end
 
     it "can download from remote" do
@@ -205,7 +206,7 @@ describe Vendorer do
     end
 
     it "can handle a trailing slash" do
-      write 'Vendorfile', "folder 'its_recursive/', '../../.git'"
+      write 'Vendorfile', "folder 'its_recursive/', '#{Bundler.root}/.git'"
       output = vendorer
       ls('').should =~ ["its_recursive", "Vendorfile"]
       read('its_recursive/Gemfile').should include('rake')
@@ -234,8 +235,8 @@ describe Vendorer do
 
       it "can update a specific folder" do
         write 'Vendorfile', "
-          folder 'its_recursive', '../../.git'
-          folder 'its_really_recursive', '../../.git'
+          folder 'its_recursive', '#{Bundler.root}/.git'
+          folder 'its_really_recursive', '#{Bundler.root}/.git'
         "
         vendorer
         write('its_recursive/Gemfile', 'Foo')
@@ -248,19 +249,19 @@ describe Vendorer do
 
     describe "git options" do
       it "can checkout by :ref" do
-        write 'Vendorfile', "folder 'its_recursive', '../../.git', :ref => 'b1e6460'"
+        write 'Vendorfile', "folder 'its_recursive', '#{Bundler.root}/.git', :ref => 'b1e6460'"
         vendorer
         read('its_recursive/Readme.md').should include('CODE EXAMPLE')
       end
 
       it "can checkout by :branch" do
-        write 'Vendorfile', "folder 'its_recursive', '../../.git', :branch => 'b1e6460'"
+        write 'Vendorfile', "folder 'its_recursive', '#{Bundler.root}/.git', :branch => 'b1e6460'"
         vendorer
         read('its_recursive/Readme.md').should include('CODE EXAMPLE')
       end
 
       it "can checkout by :tag" do
-        write 'Vendorfile', "folder 'its_recursive', '../../.git', :tag => 'b1e6460'"
+        write 'Vendorfile', "folder 'its_recursive', '#{Bundler.root}/.git', :tag => 'b1e6460'"
         vendorer
         read('its_recursive/Readme.md').should include('CODE EXAMPLE')
       end
@@ -268,7 +269,7 @@ describe Vendorer do
 
     context "with an execute after update block" do
       before do
-        write 'Vendorfile', "folder('its_recursive', '../../.git'){|path| puts 'THE PATH IS ' + path }"
+        write 'Vendorfile', "folder('its_recursive', '#{Bundler.root}/.git'){|path| puts 'THE PATH IS ' + path }"
         @output = 'THE PATH IS its_recursive'
       end
 
@@ -356,7 +357,7 @@ describe Vendorer do
       }
 
       it "installs submodules" do
-        create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub'
+        create_git_repo 'a', "git submodule add #{Bundler.root}/.git sub"
 
         vendorer.folder 'plugin', 'a/.git'
 
@@ -365,7 +366,7 @@ describe Vendorer do
       end
 
       it "installs recursive submodules" do
-        create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub_a'
+        create_git_repo 'a', "git submodule add #{Bundler.root}/.git sub_a"
         create_git_repo 'b', 'git submodule add `cd ../a/.git && pwd` sub_b'
 
         vendorer.folder 'plugin', 'b/.git'
@@ -376,7 +377,7 @@ describe Vendorer do
       end
 
       it "installs recursive submodules from a branch" do
-        create_git_repo 'a', 'git submodule add `cd ../../../.git && pwd` sub_a'
+        create_git_repo 'a', "git submodule add #{Bundler.root}/.git sub_a"
         create_git_repo 'b', 'touch .gitmodules'
 
         # create submodules on a branch
@@ -464,7 +465,7 @@ describe Vendorer do
   describe "#from" do
     it "returns to normal after the block" do
       write "Vendorfile", "
-        from '../../.git' do
+        from '#{Bundler.root}/.git' do
           file 'Readme.md'
         end
         file 'jquery.js', 'http://code.jquery.com/jquery-latest.min.js'
@@ -476,7 +477,7 @@ describe Vendorer do
 
     it "can checkout a specific version" do
       write "Vendorfile", "
-          from '../../.git', :tag => 'v0.1.0' do
+          from '#{Bundler.root}/.git', :tag => 'v0.1.0' do
             file 'lib/vendorer/version.rb'
           end
         "
@@ -486,7 +487,7 @@ describe Vendorer do
 
     it "passes the path to the working copy to the block" do
       write "Vendorfile", "
-          from('../../.git'){|path| puts `ls #\{path}` }
+          from('#{Bundler.root}/.git'){|path| puts `ls #\{path}` }
         "
       vendorer.should include('vendorer.gemspec')
     end
@@ -494,7 +495,7 @@ describe Vendorer do
     context "with file" do
       it "copies" do
         write "Vendorfile", "
-          from '../../.git' do
+          from '#{Bundler.root}/.git' do
             file 'Readme.md'
           end
         "
@@ -504,7 +505,7 @@ describe Vendorer do
 
       it "copies to/from a nested location" do
         write "Vendorfile", "
-          from '../../.git' do
+          from '#{Bundler.root}/.git' do
             file 'foo/bar/renamed.rb', 'lib/vendorer.rb'
           end
         "
@@ -515,7 +516,7 @@ describe Vendorer do
 
       it "renames" do
         write "Vendorfile", "
-          from '../../.git' do
+          from '#{Bundler.root}/.git' do
             file 'Readme.renamed', 'Readme.md'
           end
         "
@@ -527,7 +528,7 @@ describe Vendorer do
     context "with folder" do
       it "copies" do
         write "Vendorfile", "
-          from '../../.git' do
+          from '#{Bundler.root}/.git' do
             folder 'lib'
           end
         "
@@ -538,7 +539,7 @@ describe Vendorer do
 
       it "copies to/from a nested location" do
         write "Vendorfile", "
-          from '../../.git' do
+          from '#{Bundler.root}/.git' do
             folder 'foo/bar', 'lib/vendorer'
           end
         "
@@ -549,7 +550,7 @@ describe Vendorer do
 
       it "renames" do
         write "Vendorfile", "
-          from '../../.git' do
+          from '#{Bundler.root}/.git' do
             folder 'foo', 'lib'
           end
         "
@@ -563,7 +564,7 @@ describe Vendorer do
       it "copies" do
         write "Vendorfile", "
           folder 'foo' do
-            from '../../.git' do
+            from '#{Bundler.root}/.git' do
               folder 'lib'
               file 'Gemfile'
             end
@@ -578,12 +579,12 @@ describe Vendorer do
 
     it "gives 'not found' error for non-existent file" do
       write "Vendorfile", "
-        from '../../.git', :tag => 'b1e6460' do
+        from '#{Bundler.root}/.git', :tag => 'b1e6460' do
           file 'bogus'
         end
       "
       output = vendorer '', :raise => true
-      output.should include("'bogus' not found in ../../.git")
+      output.should include("'bogus' not found in #{Bundler.root}/.git")
     end
   end
 end

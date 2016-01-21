@@ -9,11 +9,7 @@ Vendorer
 Install
 -------
 
-Ensure you have:
-
- - Curl
- - Git v1.7+
- - Ruby v1.8.7 or v1.9.2+
+Needs: Curl + Git + Ruby
 
 then:
 

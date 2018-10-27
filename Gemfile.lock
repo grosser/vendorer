@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    vendorer (0.1.16)
+    vendorer (0.2.0)
 
 GEM
   remote: https://rubygems.org/

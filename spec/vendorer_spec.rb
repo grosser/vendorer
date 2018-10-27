@@ -101,8 +101,7 @@ describe Vendorer do
     it "fails with a nice message if the Vendorfile is broken" do
       write 'Vendorfile', "file 'xxx.js', 'http://NOTFOUND'"
       result = vendorer '', :raise => true
-      # different errors on travis / local
-      raise result unless result.include?("NOTFOUND") or result.include?('Downloaded empty file')
+      result.should include("Failed: curl")
     end
 
     describe "with update" do

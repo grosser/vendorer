@@ -1,5 +1,6 @@
 require 'tempfile'
 require 'tmpdir'
+require 'shellwords'
 
 class Vendorer
   def initialize(options={})
@@ -14,11 +15,11 @@ class Vendorer
   def file(path, url=nil)
     target_path = complete_path(path)
     update_or_not target_path do
-      run "mkdir -p #{File.dirname(target_path)}"
+      run "mkdir", "-p", File.dirname(target_path)
       if @copy_from_url
         copy_from_path(target_path, url || path)
       else
-        run "curl '#{url}' --fail -L --compressed -o #{target_path}"
+        run "curl", url, "--fail", "-L", "--compressed", "-o", target_path
         raise "Downloaded empty file" unless File.exist?(target_path)
       end
       yield target_path if block_given?
@@ -29,8 +30,8 @@ class Vendorer
     if @copy_from_path or url
       target_path = complete_path(path)
       update_or_not target_path do
-        run "rm -rf #{target_path}"
-        run "mkdir -p #{File.dirname(target_path)}"
+        run "rm", "-rf", target_path
+        run "mkdir", "-p", File.dirname(target_path)
         if @copy_from_path
           copy_from_path(target_path, url || path)
         else
@@ -84,14 +85,11 @@ class Vendorer
     end
   end
 
-  def run(cmd)
-    output = ''
-    IO.popen(cmd + ' 2>&1') do |pipe|
-      while line = pipe.gets
-        output << line
-      end
-    end
-    raise output unless $?.success?
+  def run(*cmd, dir: nil)
+    cmd = "#{cmd.shelljoin} 2>&1"
+    cmd = ["cd", dir].shelljoin + " && #{cmd}" if dir
+    output = `#{cmd}`
+    raise "Failed: #{cmd}\n#{output}" unless $?.success?
   end
 
   def complete_path(path)
@@ -99,18 +97,18 @@ class Vendorer
   end
 
   def download_repository(url, to, options)
-    run "git clone '#{url}' #{to}"
+    run "git", "clone", url, to
     if commit = (options[:ref] || options[:tag] || options[:branch])
-      run "cd #{to} && git checkout '#{commit}'"
+      run "git", "checkout", commit, dir: to
     end
-    run "cd #{to} && git submodule update --init --recursive"
-    run "rm -rf #{to}/.git"
+    run "git", "submodule", "update", "--init", "--recursive", dir: to
+    run "rm", "-rf", ".git", dir: to
   end
 
   def copy_from_path(dest_path, src_path)
     src_path ||= dest_path
     copy_from = File.join(@copy_from_path, src_path)
     raise "'#{src_path}' not found in #{@copy_from_url}" unless File.exist?(copy_from)
-    run "cp -Rp #{copy_from} #{dest_path}"
+    run "cp", "-Rp", copy_from, dest_path
   end
 end

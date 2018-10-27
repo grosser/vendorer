@@ -9,4 +9,5 @@ Gem::Specification.new name, Vendorer::VERSION do |s|
   s.files = `git ls-files lib Readme.md`.split("\n")
   s.license = 'MIT'
   s.executables = ["vendorer"]
+  s.required_ruby_version = '>= 2.0.0'
 end

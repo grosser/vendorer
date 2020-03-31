@@ -60,10 +60,10 @@ end
 <!-- extracted by vendorer init -->
 
  - Create a new Vendorfile: `vendorer init`
- - excute all installations: `vendorer`
+ - Execute all installations: `vendorer`
  - Update all dependencies: `vendorer update`
- - update a single dependency: `vendorer update vendor/assets/javascripts/jquery.min.js`
- - update everything in a specific folder: `vendorer update vendor/assets/javascripts`
+ - Update a single dependency: `vendorer update vendor/assets/javascripts/jquery.min.js`
+ - Update everything in a specific folder: `vendorer update vendor/assets/javascripts`
 
 
 Alternatives
